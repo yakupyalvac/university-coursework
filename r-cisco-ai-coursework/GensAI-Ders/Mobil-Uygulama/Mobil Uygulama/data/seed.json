@@ -1,0 +1,36 @@
+{
+  "categories": [
+    {
+      "id": "cisco",
+      "name": "Cisco Packet Tracer",
+      "description": "Ag topolojileri, cihaz komutlari ve IP yapilandirma"
+    },
+    {
+      "id": "visual-studio",
+      "name": "Visual Studio",
+      "description": "IDE kullanimi, proje yapisi ve hata ayiklama"
+    },
+    {
+      "id": "database",
+      "name": "Veritabanlari",
+      "description": "SQL, tablo, iliski ve temel sorgular"
+    },
+    {
+      "id": "python",
+      "name": "Python",
+      "description": "Soz dizimi, veri tipleri ve temel programlama"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q-cisco-1",
+      "categoryId": "cisco",
+      "text": "Packet Tracer'da router arayuzune IP vermek icin hangi komut kullanilir?",
+      "options": ["ip address", "set ip", "assign ip", "router ip"],
+      "correctOptionIndex": 0,
+      "explanation": "Cisco IOS arayuz modunda IP tanimlamak icin ip address komutu kullanilir.",
+      "difficulty": "orta",
+      "createdAt": "2026-05-12T00:00:00.000Z"
+    }
+  ]
+}
