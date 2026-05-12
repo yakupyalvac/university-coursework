@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Soru Bankasi</title>
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">HTML üzerinde çalışan statik bir soru bankası uygulaması</p>
+          <h1>Soru Bankasi</h1>
+        </div>
+        <button class="icon-button" id="resetSeedBtn" type="button" title="Ornek veriyi yenile">↻</button>
+      </header>
+
+      <main>
+        <section class="screen is-active" id="homeScreen" aria-labelledby="homeTitle">
+          <div class="section-head">
+            <h2 id="homeTitle">Ana sayfa</h2>
+            <p id="summaryText">Sorular yukleniyor.</p>
+          </div>
+          <div class="action-grid">
+            <button class="primary-action" data-route="add">Soru ekle</button>
+            <button class="primary-action" data-route="categories">Ders/kategori sec</button>
+            <button class="primary-action" data-route="quiz">Test coz</button>
+            <button class="primary-action" data-route="random">Rastgele soru getir</button>
+            <button class="primary-action" data-route="timed">Sureli sinav</button>
+            <button class="primary-action" data-route="results">Son sonuc</button>
+          </div>
+          <div class="status-panel" id="homeEmptyState" hidden>Henuz soru yok. Baslamak icin soru ekleyin veya ornek veriyi yenileyin.</div>
+        </section>
+
+        <section class="screen" id="addScreen" aria-labelledby="addTitle">
+          <div class="section-head row-head">
+            <button class="ghost-button" data-route="home" type="button">← Geri</button>
+            <h2 id="addTitle">Soru ekle</h2>
+          </div>
+          <form id="questionForm" class="form-stack" novalidate>
+            <label>Ders/Kategori
+              <select id="questionCategory" required></select>
+            </label>
+            <label>Soru metni
+              <textarea id="questionText" rows="4" required placeholder="Soruyu yazin"></textarea>
+            </label>
+            <div class="option-list" id="optionInputs"></div>
+            <label>Dogru cevap
+              <select id="correctOption" required>
+                <option value="0">A</option>
+                <option value="1">B</option>
+                <option value="2">C</option>
+                <option value="3">D</option>
+              </select>
+            </label>
+            <label>Zorluk
+              <select id="difficulty">
+                <option value="kolay">Kolay</option>
+                <option value="orta" selected>Orta</option>
+                <option value="zor">Zor</option>
+              </select>
+            </label>
+            <label>Aciklama
+              <textarea id="explanation" rows="3" placeholder="Istege bagli"></textarea>
+            </label>
+            <p class="form-error" id="questionFormError" role="alert"></p>
+            <button class="submit-button" type="submit">Kaydet</button>
+          </form>
+        </section>
+
+        <section class="screen" id="categoriesScreen" aria-labelledby="categoriesTitle">
+          <div class="section-head row-head">
+            <button class="ghost-button" data-route="home" type="button">← Geri</button>
+            <h2 id="categoriesTitle">Ders/kategori sec</h2>
+          </div>
+          <div class="category-list" id="categoryList"></div>
+          <div class="status-panel" id="categoryEmptyState" hidden>Kayitli kategori yok.</div>
+        </section>
+
+        <section class="screen" id="setupScreen" aria-labelledby="setupTitle">
+          <div class="section-head row-head">
+            <button class="ghost-button" data-route="home" type="button">← Geri</button>
+            <h2 id="setupTitle">Test ayarlari</h2>
+          </div>
+          <div class="setup-grid">
+            <label>Ders
+              <select id="setupCategory"></select>
+            </label>
+            <label>Soru sayisi
+              <input id="setupCount" type="number" min="1" value="5">
+            </label>
+            <label id="timeLimitWrap" hidden>Sure (dakika)
+              <input id="timeLimit" type="number" min="1" value="10">
+            </label>
+          </div>
+          <p class="form-error" id="setupError"></p>
+          <button class="submit-button" id="startQuizBtn" type="button">Baslat</button>
+        </section>
+
+        <section class="screen" id="quizScreen" aria-labelledby="quizTitle">
+          <div class="quiz-header">
+            <button class="ghost-button" data-route="home" type="button">← Cikis</button>
+            <div>
+              <h2 id="quizTitle">Test</h2>
+              <p id="quizMeta">0/0</p>
+            </div>
+            <div class="timer" id="timerBox" hidden>00:00</div>
+          </div>
+          <div class="score-strip">
+            <span>Dogru: <strong id="correctCount">0</strong></span>
+            <span>Yanlis: <strong id="wrongCount">0</strong></span>
+            <span>Bos: <strong id="emptyCount">0</strong></span>
+          </div>
+          <article class="question-panel">
+            <p class="question-text" id="activeQuestionText"></p>
+            <div class="answers" id="answerList"></div>
+          </article>
+          <div class="quiz-actions">
+            <button class="ghost-button" id="prevQuestionBtn" type="button">Onceki</button>
+            <button class="ghost-button" id="clearAnswerBtn" type="button">Cevabi temizle</button>
+            <button class="ghost-button" id="nextQuestionBtn" type="button">Sonraki</button>
+          </div>
+          <button class="ghost-button full-width" id="pauseQuizBtn" type="button" hidden>Duraklat</button>
+          <button class="submit-button" id="finishQuizBtn" type="button">Testi bitir</button>
+        </section>
+
+        <section class="screen" id="randomScreen" aria-labelledby="randomTitle">
+          <div class="section-head row-head">
+            <button class="ghost-button" data-route="home" type="button">← Geri</button>
+            <h2 id="randomTitle">Rastgele soru</h2>
+          </div>
+          <label>Ders
+            <select id="randomCategory"></select>
+          </label>
+          <button class="submit-button" id="randomQuestionBtn" type="button">Soru getir</button>
+          <div class="status-panel" id="randomEmptyState" hidden>Soru havuzu bos.</div>
+          <article class="question-panel" id="randomQuestionPanel" hidden>
+            <p class="question-text" id="randomQuestionText"></p>
+            <div class="answers" id="randomAnswerList"></div>
+            <p class="feedback" id="randomFeedback"></p>
+          </article>
+        </section>
+
+        <section class="screen" id="resultScreen" aria-labelledby="resultTitle">
+          <div class="section-head row-head">
+            <button class="ghost-button" data-route="home" type="button">← Ana sayfa</button>
+            <h2 id="resultTitle">Sonuc</h2>
+          </div>
+          <div class="result-grid" id="resultGrid"></div>
+          <div class="review-list" id="reviewList"></div>
+          <div class="status-panel" id="resultEmptyState" hidden>Gosterilecek sonuc yok.</div>
+        </section>
+      </main>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
