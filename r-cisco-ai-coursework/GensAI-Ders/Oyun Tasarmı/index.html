@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restoran Sipariş Yetiştirme</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="game" aria-label="Restoran Sipariş Yetiştirme oyunu">
+    <section class="brand-strip" aria-label="Oyun başlığı">
+      <div>
+        <span class="brand-kicker">Hızlı servis oyunu</span>
+        <h1>Restoran Sipariş Yetiştirme</h1>
+      </div>
+      <div class="brand-actions">
+        <button id="marketButton" class="brand-button" type="button">Market</button>
+        <strong>Şef modu</strong>
+      </div>
+    </section>
+
+    <header class="hud">
+      <div class="stat">
+        <span>Süre</span>
+        <strong id="timeText">60</strong>
+      </div>
+      <div class="stat">
+        <span>Skor</span>
+        <strong id="scoreText">0</strong>
+      </div>
+      <div class="stat">
+        <span>En İyi</span>
+        <strong id="bestText">0</strong>
+      </div>
+      <div class="stat compact">
+        <span>Seviye</span>
+        <strong id="levelText">1</strong>
+      </div>
+      <div class="stat compact">
+        <span>Combo</span>
+        <strong id="comboText">x0</strong>
+      </div>
+      <div class="stat compact">
+        <span>Can</span>
+        <strong id="livesText">❤❤❤</strong>
+      </div>
+      <div class="stat compact">
+        <span>Para</span>
+        <strong id="coinsText">0</strong>
+      </div>
+    </header>
+
+    <section class="mission" aria-label="Görev hedefi">
+      <div>
+        <strong id="missionText">Hedef: 420 puan</strong>
+        <span id="difficultyText">Normal</span>
+      </div>
+      <div class="mission-bar" aria-hidden="true">
+        <div id="missionFill" class="mission-fill"></div>
+      </div>
+      <div class="daily-row">
+        <strong id="dailyText">Günlük görev yükleniyor</strong>
+        <span id="dailyRewardText">Ödül: 0 para</span>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="Oyun kontrolleri">
+      <button id="pauseButton" class="tool-button" type="button" disabled>Duraklat</button>
+      <button id="soundButton" class="tool-button" type="button" aria-pressed="true">Ses: Açık</button>
+      <span>Enter: başlat / devam, P: duraklat, 1-8: yemek seç</span>
+    </section>
+
+    <section class="restaurant" aria-label="Müşteri kuyruğu">
+      <div class="kitchen-sign" aria-hidden="true">Şefin Tezgahı</div>
+      <div id="floatLayer" class="float-layer" aria-hidden="true"></div>
+      <div id="queue" class="queue"></div>
+      <div class="counter" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </section>
+
+    <section class="food-area" aria-label="Yemek seçimi">
+      <div class="food-title">
+        <span>En eski müşterinin siparişini sırayla hazırla</span>
+        <span id="foodHint">Seviye yükseldikçe yeni yemekler açılır</span>
+      </div>
+      <div id="foods" class="foods"></div>
+      <div id="feedback" class="feedback" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <div id="startOverlay" class="overlay">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="startTitle">
+      <h1 id="startTitle">Restoran Sipariş Yetiştirme</h1>
+      <p>Müşterilerin siparişlerini süre dolmadan yetiştir. Combo yap, hedef puanı geç ve en iyi skorunu yükselt.</p>
+
+      <fieldset class="difficulty-picker">
+        <legend>Zorluk</legend>
+        <label>
+          <input type="radio" name="difficulty" value="easy" />
+          <span>Kolay</span>
+        </label>
+        <label>
+          <input type="radio" name="difficulty" value="normal" checked />
+          <span>Normal</span>
+        </label>
+        <label>
+          <input type="radio" name="difficulty" value="hard" />
+          <span>Zor</span>
+        </label>
+      </fieldset>
+
+      <label class="sound-choice">
+        <input id="soundToggle" type="checkbox" checked />
+        <span>Ses efektleri açık</span>
+      </label>
+
+      <div class="start-actions">
+        <button id="tutorialButton" class="mini-button" type="button" aria-expanded="false">Nasıl Oynanır?</button>
+        <button id="resetDataButton" class="mini-button danger" type="button">Kayıtları Sıfırla</button>
+      </div>
+
+      <section id="tutorialPanel" class="tutorial-panel" hidden>
+        <h2>Kısa Öğretici</h2>
+        <ul>
+          <li>En eski müşterinin balonundaki ürünleri sırayla seç.</li>
+          <li>Hızlı servis combo, bahşiş ve sıcak servis bonusu verir.</li>
+          <li>Acele siparişler daha zordur ama daha çok kazandırır.</li>
+          <li>Müşteri kaçarsa can kaybedersin. Can veya süre biterse oyun biter.</li>
+          <li>Oyun sonunda kazandığın parayla marketten kalıcı yükseltme al.</li>
+        </ul>
+      </section>
+
+      <button id="startButton" class="primary-button">Başla</button>
+    </section>
+  </div>
+
+  <div id="marketOverlay" class="overlay" hidden>
+    <section class="modal market-modal" role="dialog" aria-modal="true" aria-labelledby="marketTitle">
+      <div class="modal-head">
+        <div>
+          <span class="modal-kicker">Kalıcı yükseltmeler</span>
+          <h1 id="marketTitle">Market</h1>
+        </div>
+        <button id="closeMarketButton" class="icon-button" type="button" aria-label="Marketi kapat">×</button>
+      </div>
+      <p>Oyunlardan kazandığın parayla servis hızını ve dayanıklılığını güçlendir.</p>
+      <section class="shop" aria-label="Market yükseltmeleri">
+        <div class="shop-head">
+          <strong>Yükseltmeler</strong>
+          <span id="shopCoinsText">Para: 0</span>
+        </div>
+        <div id="shopItems" class="shop-items"></div>
+      </section>
+    </section>
+  </div>
+
+  <div id="pauseOverlay" class="overlay" hidden>
+    <section class="modal small-modal" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+      <h1 id="pauseTitle">Duraklatıldı</h1>
+      <p>Devam etmek için Enter, P veya düğmeye bas.</p>
+      <button id="resumeButton" class="primary-button">Devam Et</button>
+    </section>
+  </div>
+
+  <div id="gameOverOverlay" class="overlay" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="gameOverTitle">
+      <h1 id="gameOverTitle">Oyun Bitti</h1>
+      <strong id="gradeText" class="grade">Derece: -</strong>
+      <p id="finalText">Skorun: 0</p>
+      <dl class="result-grid">
+        <div>
+          <dt>Servis</dt>
+          <dd id="servedText">0</dd>
+        </div>
+        <div>
+          <dt>Kaçan</dt>
+          <dd id="missedText">0</dd>
+        </div>
+        <div>
+          <dt>En İyi Combo</dt>
+          <dd id="bestComboText">0</dd>
+        </div>
+        <div>
+          <dt>Görev</dt>
+          <dd id="missionResultText">-</dd>
+        </div>
+        <div>
+          <dt>Bahşiş</dt>
+          <dd id="tipsText">0</dd>
+        </div>
+        <div>
+          <dt>Acele</dt>
+          <dd id="rushText">0</dd>
+        </div>
+        <div>
+          <dt>Kalite</dt>
+          <dd id="qualityText">0</dd>
+        </div>
+        <div>
+          <dt>Para</dt>
+          <dd id="earnedCoinsText">0</dd>
+        </div>
+      </dl>
+      <p id="dailyResultText" class="result-note">Günlük görev: -</p>
+      <div class="modal-actions">
+        <button id="restartButton" class="primary-button">Tekrar Oyna</button>
+        <button id="openMarketFromResultButton" class="secondary-button">Market</button>
+        <button id="menuButton" class="secondary-button">Ana Menü</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="countdown" class="countdown" hidden aria-live="assertive"></div>
+  <span id="liveStatus" class="sr-only" aria-live="assertive"></span>
+
+  <script src="script.js"></script>
+</body>
+</html>
